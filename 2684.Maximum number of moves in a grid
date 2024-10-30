@@ -1,0 +1,35 @@
+class Solution {
+public:
+    int maxMoves(vector<vector<int>>& grid) {
+        int rows = grid.size();
+        int cols = grid[0].size();
+
+        // Dp table to store the max moves from each cell
+        vector<vector<int>> dp(rows, vector<int>(cols,0));
+        int maxmoves = 0;
+
+        //traverse from the sec to last col to 1st col
+        for(int col = cols - 2; col >=0; col--){
+            for(int row = 0; row < rows; row++){
+                // check possible moves
+                // move right directly if its value is greater
+                int right = grid[row][col + 1] > grid[row][col] ? dp[row][col+1] + 1 : 0;
+
+                // right up : abv to right up if within bounds and value is >
+                int rightup = (row > 0 && grid[row - 1][col + 1] > grid[row][col]) ? dp[row-1][col+1] + 1 : 0;
+
+                // right down : below to right down if within bounds and value is >
+                int rightdown = (row < rows - 1 && grid[row + 1][col + 1] > grid[row][col]) ? dp[row+1][col+1] + 1 : 0;
+
+                //store possible max in dp[row][col]
+                dp[row][col] = max({right, rightup,rightdown});
+
+                // if at 1st col,update max moves with max found so far
+                if(col == 0){
+                    maxmoves = max(maxmoves, dp[row][col]);
+                } 
+            }
+        }
+        return maxmoves;
+    }
+};
