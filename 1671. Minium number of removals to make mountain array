@@ -1,0 +1,60 @@
+problem :
+https://leetcode.com/problems/minimum-number-of-removals-to-make-mountain-array/
+
+// Approach :
+
+// find longest increasing subsequence - LIS and longest decreasing subsequence - LID
+
+// To calculate the max len of mountain length 
+
+// max mountain len = LIS + LID - 1
+
+// then, Min no.of removals to make mountain array 
+
+// size - max mounatin len
+
+
+class Solution {
+public:
+    vector<int> calculatelis(vector<int>& nums){
+        int n = nums.size();
+        vector<int> left(n,1);
+
+        // traverse left to right , compute LIS for each element
+        for(int i=1; i<n; i++){
+            int temp = 1;
+            for(int j = i-1; j >=0; j--){
+                if(nums[i] > nums[j]){
+                    temp = max(temp, left[j] + 1);
+                }
+            }
+            left[i] =  temp; // store LIS len
+        }
+        return left;
+    }
+
+    int minimumMountainRemovals(vector<int>& nums) {
+        int n = nums.size();
+        vector<int> lis = calculatelis(nums); 
+
+        // for LDS - reverse the array
+        reverse(nums.begin(),nums.end());
+        vector<int> lds = calculatelis(nums);
+        reverse(lds.begin(),lds.end());
+
+        int maxmountainlen = 0;
+
+        for(int i=0; i<n; i++){
+            if(lis[i] == 1 || lds[i] == 1){
+                continue;   // skip if no peak can be formed at index 1
+            }
+            maxmountainlen = max(maxmountainlen, lis[i] + lds[i] - 1);  // lis + lds - 1 = maxmountain len
+        }
+
+        int ans = n - maxmountainlen; // min no.of removals = size - maxmountainlen
+        return ans;
+    }
+};
+
+
+
