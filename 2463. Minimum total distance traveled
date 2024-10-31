@@ -1,0 +1,36 @@
+Problem : https://leetcode.com/problems/minimum-total-distance-traveled/
+
+
+class Solution {
+public:
+    long long minimumTotalDistance(vector<int>& robot, vector<vector<int>>& factory) {
+        int m = robot.size();
+        int n = factory.size();
+        
+        // sort robots & factories
+        sort(robot.begin(),robot.end());
+        sort(factory.begin(),factory.end());
+        
+        // Intialize DP with max value (infinity)
+        vector<vector<long long>> dp(m+1,vector<long long>(n+1,LLONG_MAX));
+        dp[0][0] = 0;
+
+        //Iterate for the factory capacity to assign robots
+
+        for(int i=0; i<=m; i++){
+            for(int j=1; j<=n; j++){
+                dp[i][j] = dp[i][j - 1];     // skip current factory
+                
+                //assign upto capacity of factory
+                long long cost = 0;  
+                for(int k=1; k<= min(i,factory[j - 1][1]); k++){
+                    cost += abs(robot[i-k] - factory[j-1][0]);       // cost for assignment
+                    if(dp[i-k][j-1] != LLONG_MAX && cost < LLONG_MAX - dp[i-k][j-1] ){  
+                        dp[i][j] = min(dp[i][j],dp[i-k][j-1] + cost);    // update if feasible
+                    }                       
+                }
+            }
+        }
+        return dp[m][n];
+    }
+};
